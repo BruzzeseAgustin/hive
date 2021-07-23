@@ -113,6 +113,7 @@ import org.apache.hadoop.hive.shims.ShimLoader;
 import org.apache.hive.common.util.StreamPrinter;
 import org.apache.hive.druid.MiniDruidCluster;
 import org.apache.hive.kafka.SingleNodeKafkaCluster;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.tools.ant.BuildException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -412,7 +413,7 @@ public class QTestUtil {
     Path userInstallPath;
     if (isLocalFs) {
       String buildDir = System.getProperty(BUILD_DIR_PROPERTY);
-      Preconditions.checkState(StringUtils.isNotBlank(buildDir));
+      Preconditions.checkState(Strings.isNotBlank(buildDir));
       Path path = new Path(fsUriString, buildDir);
 
       // Create a fake fs root for local fs
@@ -2080,7 +2081,7 @@ public class QTestUtil {
             .append(qfiles[i].getName())
             .append(" results check failed with error code ")
             .append(result.getReturnCode());
-        if (StringUtils.isNotEmpty(result.getCapturedOutput())) {
+        if (Strings.isNotEmpty(result.getCapturedOutput())) {
           builder.append(" and diff value ").append(result.getCapturedOutput());
         }
         System.err.println(builder.toString());
@@ -2138,7 +2139,7 @@ public class QTestUtil {
             .append(qfiles[i].getName())
             .append(" results check failed with error code ")
             .append(result.getReturnCode());
-        if (StringUtils.isNotEmpty(result.getCapturedOutput())) {
+        if (Strings.isNotEmpty(result.getCapturedOutput())) {
           builder.append(" and diff value ").append(result.getCapturedOutput());
         }
         System.err.println(builder.toString());
