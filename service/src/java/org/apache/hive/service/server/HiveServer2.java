@@ -116,6 +116,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
@@ -326,7 +327,7 @@ public class HiveServer2 extends CompositeService {
           if (hiveConf.getBoolVar(ConfVars.HIVE_SERVER2_WEBUI_USE_SSL)) {
             String keyStorePath = hiveConf.getVar(
               ConfVars.HIVE_SERVER2_WEBUI_SSL_KEYSTORE_PATH);
-            if (StringUtils.isBlank(keyStorePath)) {
+            if (Strings.isBlank(keyStorePath)) {
               throw new IllegalArgumentException(
                 ConfVars.HIVE_SERVER2_WEBUI_SSL_KEYSTORE_PATH.varname
                   + " Not configured for SSL connection");
@@ -341,7 +342,7 @@ public class HiveServer2 extends CompositeService {
                 ConfVars.HIVE_SERVER2_WEBUI_SPNEGO_PRINCIPAL);
             String spnegoKeytab = hiveConf.getVar(
                 ConfVars.HIVE_SERVER2_WEBUI_SPNEGO_KEYTAB);
-            if (StringUtils.isBlank(spnegoPrincipal) || StringUtils.isBlank(spnegoKeytab)) {
+            if (Strings.isBlank(spnegoPrincipal) || Strings.isBlank(spnegoKeytab)) {
               throw new IllegalArgumentException(
                 ConfVars.HIVE_SERVER2_WEBUI_SPNEGO_PRINCIPAL.varname
                   + "/" + ConfVars.HIVE_SERVER2_WEBUI_SPNEGO_KEYTAB.varname
@@ -356,8 +357,7 @@ public class HiveServer2 extends CompositeService {
             String allowedOrigins = hiveConf.getVar(ConfVars.HIVE_SERVER2_WEBUI_CORS_ALLOWED_ORIGINS);
             String allowedMethods = hiveConf.getVar(ConfVars.HIVE_SERVER2_WEBUI_CORS_ALLOWED_METHODS);
             String allowedHeaders = hiveConf.getVar(ConfVars.HIVE_SERVER2_WEBUI_CORS_ALLOWED_HEADERS);
-            if (StringUtils.isBlank(allowedOrigins) || StringUtils.isBlank(allowedMethods) || StringUtils
-                .isBlank(allowedHeaders)) {
+            if (Strings.isBlank(allowedOrigins) || Strings.isBlank(allowedMethods) || Strings.isBlank(allowedHeaders)) {
               throw new IllegalArgumentException("CORS enabled. But " +
                 ConfVars.HIVE_SERVER2_WEBUI_CORS_ALLOWED_ORIGINS.varname + "/" +
                 ConfVars.HIVE_SERVER2_WEBUI_CORS_ALLOWED_METHODS.varname + "/" +

@@ -534,11 +534,12 @@ public class HiveMetaStore extends ThriftHiveMetastore {
       wh = new Warehouse(conf);
 
       synchronized (HMSHandler.class) {
-        if (currentUrl == null || !currentUrl.equals(MetaStoreInit.getConnectionURL(conf))) {
+        String connectionURL = MetaStoreInit.getConnectionURL(conf);
+        if (currentUrl == null || !currentUrl.equals(connectionURL)) {
           createDefaultDB();
           createDefaultRoles();
           addAdminUsers();
-          currentUrl = MetaStoreInit.getConnectionURL(conf);
+          currentUrl = connectionURL;
         }
       }
 

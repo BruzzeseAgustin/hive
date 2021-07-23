@@ -28,6 +28,7 @@ import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.ResultSet;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -206,14 +207,35 @@ class MetaStoreDirectSql {
 
   static String getProductName(PersistenceManager pm) {
     JDOConnection jdoConn = pm.getDataStoreConnection();
-    try {
-      return ((Connection)jdoConn.getNativeConnection()).getMetaData().getDatabaseProductName();
+    String productName = null;
+    try (Connection nativeConnection = (Connection) jdoConn.getNativeConnection()) {
+      productName =  nativeConnection.getMetaData().getDatabaseProductName();
     } catch (Throwable t) {
       LOG.warn("Error retrieving product name", t);
-      return null;
     } finally {
       jdoConn.close(); // We must release the connection before we call other pm methods.
     }
+
+    if (StringUtils.containsIgnoreCase(productName, "postgresql")) {
+      jdoConn = pm.getDataStoreConnection();
+      try (
+        Connection nativeConnection = (Connection) jdoConn.getNativeConnection();
+        Statement statement = nativeConnection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select version()")) {
+        if (resultSet.next()) {
+          String version = resultSet.getString("version");
+          if (StringUtils.containsIgnoreCase(version, "cockroachdb")) {
+            return "cockroachdb";
+          }
+        }
+      } catch (Throwable t) {
+        LOG.warn("Error retrieving postgres version", t);
+      } finally {
+        jdoConn.close();
+      }
+    }
+
+    return productName;
   }
 
   private boolean ensureDbInit() {

@@ -23,7 +23,7 @@ import java.sql.SQLTransactionRollbackException;
 
 /** Database product infered via JDBC. */
 public enum DatabaseProduct {
-  DERBY, MYSQL, POSTGRES, ORACLE, SQLSERVER, OTHER;
+  DERBY, MYSQL, POSTGRES, ORACLE, SQLSERVER, COCKROACHDB, OTHER;
 
   /**
    * Determine the database product type
@@ -45,6 +45,8 @@ public enum DatabaseProduct {
       return ORACLE;
     } else if (productName.contains("postgresql")) {
       return POSTGRES;
+    } else if (productName.contains("cockroachdb")) {
+        return COCKROACHDB;
     } else {
       return OTHER;
     }

@@ -257,9 +257,9 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
       }
 
       if (MetastoreConf.getVar(conf, ConfVars.THRIFT_URI_SELECTION).equalsIgnoreCase("RANDOM")) {
-        List<URI> uriList = Arrays.asList(metastoreUris);
+        List uriList = Arrays.asList(metastoreUris);
         Collections.shuffle(uriList);
-        metastoreUris = uriList.toArray(new URI[uriList.size()]);
+        metastoreUris = (URI[]) uriList.toArray();
       }
     } catch (IllegalArgumentException e) {
       throw (e);

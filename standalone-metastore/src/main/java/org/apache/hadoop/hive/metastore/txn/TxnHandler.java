@@ -92,6 +92,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 
+import static org.apache.commons.lang.StringUtils.containsIgnoreCase;
+
 /**
  * A handler to answer transaction related calls that come into the metastore
  * server.
@@ -3306,6 +3308,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
 
         case MYSQL:
         case POSTGRES:
+        case COCKROACHDB:
         case SQLSERVER:
           s = "select current_timestamp";
           break;
@@ -3360,6 +3363,20 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
       String msg = "Unable to get database product name";
       LOG.error(msg, e);
       throw new IllegalStateException(msg, e);
+    }
+
+    if (DatabaseProduct.POSTGRES.equals(dbProduct)) {
+      try (Statement statement = conn.createStatement();
+           ResultSet resultSet = statement.executeQuery("select version()")) {
+        if (resultSet.next()) {
+          String version = resultSet.getString("version");
+          if (containsIgnoreCase(version, "cockroachdb")) {
+            dbProduct = DatabaseProduct.COCKROACHDB;
+          }
+        }
+      } catch (Throwable t) {
+        LOG.warn("Error retrieving postgres version", t);
+      }
     }
   }
 
@@ -4681,6 +4698,7 @@ abstract class TxnHandler implements TxnStore, TxnStore.MutexAPI {
           return true;
         }
         break;
+      case COCKROACHDB:
       case POSTGRES:
         //http://www.postgresql.org/docs/8.1/static/errcodes-appendix.html
         if("23505".equals(ex.getSQLState())) {

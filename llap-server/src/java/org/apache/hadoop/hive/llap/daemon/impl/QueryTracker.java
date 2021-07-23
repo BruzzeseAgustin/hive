@@ -122,8 +122,11 @@ public class QueryTracker extends AbstractService {
         new ThreadFactoryBuilder().setDaemon(true).setNameFormat("QueryCompletionThread %d").build());
 
     String logger = HiveConf.getVar(conf, ConfVars.LLAP_DAEMON_LOGGER);
-    routeBasedLoggingEnabled =
-        logger != null && (logger.equalsIgnoreCase(LogHelpers.LLAP_LOGGER_NAME_QUERY_ROUTING));
+    if (logger != null && (logger.equalsIgnoreCase(LogHelpers.LLAP_LOGGER_NAME_QUERY_ROUTING))) {
+      routeBasedLoggingEnabled = true;
+    } else {
+      routeBasedLoggingEnabled = false;
+    }
     LOG.info(
         "QueryTracker setup with numCleanerThreads={}, defaultCleanupDelay(s)={}, routeBasedLogging={}",
         numCleanerThreads, defaultDeleteDelaySeconds, routeBasedLoggingEnabled);
